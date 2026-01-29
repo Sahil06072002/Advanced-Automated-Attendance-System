@@ -1,0 +1,140 @@
+from tkinter import*
+from tkinter import ttk
+from PIL import Image,ImageTk
+from student import Student
+from train import Train
+from attendance import Attendance
+from developer import Developer
+import os
+from helpsupport import Helpsupport
+import subprocess
+import cv2
+
+class Face_Recognition_System:
+    def __init__(self,root):
+        self.root=root
+        self.root.geometry("1366x768+0+0")
+        self.root.title("Face_Recogonition_System")
+
+# This part is image labels setting start 
+        # first header image  
+        img=Image.open(r"d:/Automated Attendance/Images_GUI/banner1.jpg")
+        img=img.resize((1366,130),Image.ANTIALIAS)
+        self.photoimg=ImageTk.PhotoImage(img)
+
+        # set image as lable
+        f_lb1 = Label(self.root,image=self.photoimg)
+        f_lb1.place(x=0,y=0,width=1366,height=130)
+
+        # backgorund image 
+        bg1=Image.open(r"D:/Automated Attendance/Images_GUI/bg3.jpg")
+        bg1=bg1.resize((1366,768),Image.ANTIALIAS)
+        self.photobg1=ImageTk.PhotoImage(bg1)
+
+        # set image as lable
+        bg_img = Label(self.root,image=self.photobg1)
+        bg_img.place(x=0,y=130,width=1366,height=868)
+
+
+        #title section
+        title_lb1 = Label(bg_img,text="Automated Attendance System",font=("verdana",27,"bold"),bg="white",fg="black")
+        title_lb1.place(x=0,y=0,width=1366,height=45)
+
+        # Create buttons below the section 
+        # ------------------------------------------------------------------------------------------------------------------- 
+        # student button 1
+        std_img_btn=Image.open(r"D:/Automated Attendance/Images_GUI/std1.jpg")
+        std_img_btn=std_img_btn.resize((180,180),Image.ANTIALIAS)
+        self.std_img1=ImageTk.PhotoImage(std_img_btn)
+
+        std_b1 = Button(bg_img,command=self.student_pannels,image=self.std_img1,cursor="hand2")
+        std_b1.place(x=250,y=200,width=180,height=180)
+
+        std_b1_1 = Button(bg_img,command=self.student_pannels,text="Student Section",cursor="hand2",font=("tahoma",15,"bold"),bg="white",fg="black")
+        std_b1_1.place(x=250,y=380,width=180,height=45)
+
+        # Detect Face  button 2
+        det_img_btn=Image.open(r"D:/Automated Attendance/Images_GUI/det1.jpg")
+        det_img_btn=det_img_btn.resize((180,180),Image.ANTIALIAS)
+        self.det_img1=ImageTk.PhotoImage(det_img_btn)
+
+        det_b1 = Button(bg_img,command=self.face_rec,image=self.det_img1,cursor="hand2",)
+        det_b1.place(x=480,y=200,width=180,height=180)
+
+        det_b1_1 = Button(bg_img,command=self.face_rec,text="Face Detector",cursor="hand2",font=("tahoma",15,"bold"),bg="white",fg="black")
+        det_b1_1.place(x=480,y=380,width=180,height=45)
+
+
+         # Train   button 3
+        tra_img_btn=Image.open(r"d:/Automated Attendance/Images_GUI/tra1.jpg")
+        tra_img_btn=tra_img_btn.resize((180,180),Image.ANTIALIAS)
+        self.tra_img1=ImageTk.PhotoImage(tra_img_btn)
+
+        tra_b1 = Button(bg_img,command=self.train_pannels,image=self.tra_img1,cursor="hand2",)
+        tra_b1.place(x=710,y=200,width=180,height=180)
+
+        tra_b1_1 = Button(bg_img,command=self.train_pannels,text="Dataset",cursor="hand2",font=("tahoma",15,"bold"),bg="white",fg="black")
+        tra_b1_1.place(x=710,y=380,width=180,height=45)
+
+        # Photo   button 4
+        pho_img_btn=Image.open(r"D:/Automated Attendance/Images_GUI/qr1.jpg")
+        pho_img_btn=pho_img_btn.resize((180,180),Image.ANTIALIAS)
+        self.pho_img1=ImageTk.PhotoImage(pho_img_btn)
+
+        pho_b1 = Button(bg_img,command=self.open_img,image=self.pho_img1,cursor="hand2",)
+        pho_b1.place(x=940,y=200,width=180,height=180)
+
+        pho_b1_1 = Button(bg_img,command=self.open_img,text="Take Image",cursor="hand2",font=("tahoma",15,"bold"),bg="white",fg="black")
+        pho_b1_1.place(x=940,y=380,width=180,height=45)
+
+# ==================Funtion for Open Images Folder==================
+    def open_img(self):
+        capture = cv2.VideoCapture(0)  # Open the default camera (usually 0)
+
+        # Read a single frame from the camera
+        ret, frame = capture.read()
+
+        if ret:
+            # Specify the directory and file name to save the image
+            save_directory = "D:/Automated Attendance System/studentsdetails/test/"
+            image_name = "test.jpg"
+            image_path = os.path.join(save_directory, image_name)
+
+            # Check if the file already exists and delete it if it does
+            if os.path.exists(image_path):
+                os.remove(image_path)
+
+            # Save the captured frame as an image
+            cv2.imwrite(image_path, frame)
+            print("Image saved:", image_path)
+        else:
+            print("Failed to capture image.")
+
+        capture.release()  # Release the camera
+# =======
+# ==================Functions Buttons=====================
+    def student_pannels(self):
+        self.new_window=Toplevel(self.root)
+        self.app=Student(self.new_window)
+
+    def train_pannels(self):
+        self.new_window=Toplevel(self.root)
+        self.app=Train(self.new_window)
+    
+    def face_rec(self):
+        script_directory = r'D:\Automated Attendance System\studentsdetails'
+        script_name = 'face.py'
+
+        script_path = os.path.join(script_directory, script_name)
+
+        # Change the current working directory to the script directory
+        os.chdir(script_directory)
+
+        # Run the script using subprocess
+        subprocess.Popen(['python', script_path], shell=True)
+    
+
+if __name__ == "__main__":
+    root=Tk()
+    obj=Face_Recognition_System(root)
+    root.mainloop()
